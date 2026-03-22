@@ -127,14 +127,32 @@ export default function Billing() {
 
   const handleCreateCustomer = async (e) => {
     e.preventDefault();
+    
+    // Name validation: Letters and spaces, 2-50 chars
+    const nameRegex = /^[a-zA-Z\s]{2,50}$/;
+    if (!nameRegex.test(newCustomer.name)) {
+      alert("Invalid Name: Please use only letters and spaces (2-50 characters).");
+      return;
+    }
+
+    // Phone validation: Exactly 10 digits
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(newCustomer.phone)) {
+      alert("Invalid Phone: Please enter exactly 10 digits.");
+      return;
+    }
+
     try {
       const { data } = await api.post('/customers', newCustomer);
       setCustomers([...customers, data]);
       selectCustomer(data);
       setShowNewCustomerModal(false);
       setNewCustomer({ name: '', phone: '', address: '' });
+      setSuccessMessage('Customer added and selected.');
+      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
-      alert("Failed to add customer: " + error.message);
+      console.error("POS Add Customer Error:", error);
+      alert(error.response?.data?.message || "Failed to add customer. Please try again.");
     }
   };
 
@@ -664,10 +682,11 @@ export default function Billing() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-lg rounded-3xl bg-white p-8 shadow-2xl relative">
             <button onClick={() => setShowNewCustomerModal(false)} className="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-900"><X className="h-6 w-6"/></button>
-            <div className="mb-8"><h3 className="text-2xl font-black text-gray-900">Add New Customer</h3><p className="text-sm text-gray-500 mb-6">Create a new profile for billing.</p></div>
+            <div className="mb-8"><h3 className="text-2xl font-black text-gray-900">Add New Customer</h3><p className="text-sm text-gray-500">Create a new profile for billing.</p></div>
             <form onSubmit={handleCreateCustomer} className="space-y-6">
-              <div><label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Full Name</label><input type="text" required className="w-full py-3 px-4 bg-gray-50 border-gray-100 rounded-2xl focus:ring-2 focus:ring-theme-primary" value={newCustomer.name} onChange={(e) => setNewCustomer({...newCustomer, name: e.target.value})}/></div>
-              <div><label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Phone</label><input type="text" required className="w-full py-3 px-4 bg-gray-50 border-gray-100 rounded-2xl focus:ring-2 focus:ring-theme-primary" value={newCustomer.phone} onChange={(e) => setNewCustomer({...newCustomer, phone: e.target.value})}/></div>
+              {/* Optional validation info could go here or as pattern titles */}
+              <div><label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Full Name</label><input type="text" required pattern="^[a-zA-Z\s]{2,50}$" title="Letters and spaces only, 2-50 chars" className="w-full py-3 px-4 bg-gray-50 border-gray-100 rounded-2xl focus:ring-2 focus:ring-theme-primary" value={newCustomer.name} onChange={(e) => setNewCustomer({...newCustomer, name: e.target.value})}/></div>
+              <div><label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Phone</label><input type="text" required pattern="\d{10}" title="Exactly 10 digits" className="w-full py-3 px-4 bg-gray-50 border-gray-100 rounded-2xl focus:ring-2 focus:ring-theme-primary" value={newCustomer.phone} onChange={(e) => setNewCustomer({...newCustomer, phone: e.target.value})}/></div>
               <div><label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Address</label><textarea className="w-full py-3 px-4 bg-gray-50 border-gray-100 rounded-2xl focus:ring-2 focus:ring-theme-primary" rows="2" value={newCustomer.address} onChange={(e) => setNewCustomer({...newCustomer, address: e.target.value})}/></div>
               <button type="submit" className="w-full py-4 bg-theme-secondary text-white rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-theme-hover transition-all">Save & Continue</button>
             </form>

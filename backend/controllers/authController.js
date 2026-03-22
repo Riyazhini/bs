@@ -6,16 +6,28 @@ import jwt from "jsonwebtoken";
 export const registerUser = async (req,res) => {
 
   try {
+    const { name, email, password, role, phoneNumber } = req.body;
 
-    const {name,email,password,role} = req.body;
+    // Validation Regex
+    const nameRegex = /^[a-zA-Z\s]{2,50}$/;
+    const phoneRegex = /^\d{10}$/;
 
-    const hashedPassword = await bcrypt.hash(password,10);
+    if (!nameRegex.test(name)) {
+      return res.status(400).json({ message: "Invalid name. Use only letters and spaces (2-50 chars)." });
+    }
+
+    if (phoneNumber && !phoneRegex.test(phoneNumber)) {
+      return res.status(400).json({ message: "Invalid phone number. Must be exactly 10 digits." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
       name,
       email,
       password: hashedPassword,
-      role
+      role,
+      phoneNumber
     });
 
     await user.save();
@@ -64,4 +76,18 @@ export const loginUser = async (req,res) => {
     res.status(500).json({message:error.message});
   }
 
+};
+
+// Get All Staff
+export const getStaff = async (req, res) => {
+  try {
+    console.log("--- GET STAFF START ---");
+    console.log("Admin user id from token:", req.user?.id);
+    const staff = await User.find({ role: "staff" }).select("-password");
+    console.log(`Found ${staff.length} staff members in DB`);
+    res.json(staff);
+  } catch (error) {
+    console.error("DATABASE ERROR in getStaff:", error);
+    res.status(500).json({ message: "Database error while fetching staff." });
+  }
 };

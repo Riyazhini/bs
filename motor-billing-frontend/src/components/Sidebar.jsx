@@ -24,6 +24,7 @@ const allNavigation = [
   { name: 'Customers', href: '/customers', icon: Users, roles: ['admin'] },
   { name: 'Billing POS', href: '/billing', icon: Receipt, roles: ['admin', 'staff'] },
   { name: 'Sales History', href: '/history', icon: History, roles: ['admin'] },
+  { name: 'Staff Management', href: '/staff', icon: Users, roles: ['admin'] },
 ];
 
 export default function Sidebar() {

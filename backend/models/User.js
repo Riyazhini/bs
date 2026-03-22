@@ -15,7 +15,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["admin", "staff"],
     default: "staff"
+  },
+  phoneNumber: {
+    type: String,
+    required: false
   }
-});
+}, { collection: 'users' });
 
 export default mongoose.model("User", userSchema);

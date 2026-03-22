@@ -11,9 +11,11 @@ export const verifyToken = (req, res, next) => {
 
   try {
     const verified = jwt.verify(token, "SECRET_KEY");
+    console.log("Token verified. User role:", verified.role);
     req.user = verified;
     next();
   } catch (error) {
+    console.error("Token verification failed:", error.message);
     res.status(400).json({ message: "Invalid token" });
   }
 };

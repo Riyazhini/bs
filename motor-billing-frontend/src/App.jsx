@@ -5,6 +5,7 @@ import Products from './pages/Products';
 import Customers from './pages/Customers';
 import Billing from './pages/Billing';
 import SalesHistory from './pages/SalesHistory';
+import StaffManagement from './pages/StaffManagement';
 import Login from './pages/Login';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
@@ -59,6 +60,11 @@ function App() {
             <Route path="history" element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <SalesHistory />
+              </ProtectedRoute>
+            } />
+            <Route path="staff" element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <StaffManagement />
               </ProtectedRoute>
             } />
             <Route path="*" element={<Navigate to="/" replace />} />
